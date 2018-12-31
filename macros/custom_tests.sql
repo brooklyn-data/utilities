@@ -11,10 +11,9 @@ where
 {% endmacro %}
 
 
-{% macro test_equal_value(model, column_name, comparison_value, where_clause=none, table_override=none, aggregate_key=none, precision_amount=none) %}
+{% macro test_equal_value(model, column_name, comparison_value, where_clause=none, table_override=none, aggregate_key=none, precision_amount=0) %}
 
-
-{% if table_override is not none %}
+{%- if table_override is not none -%}
 	with cte_aggregation as (
 		select
 			{{ aggregate_key }},
@@ -31,28 +30,17 @@ where
 
 	join cte_aggregation using({{ aggregate_key }})
 
-	where round( ({{ column_name }}) - (comp_value), 3) <> 0
+	where abs({{ column_name }} - comp_value) > {{ precision_amount }}
+		{% if where_clause is not none %} and {{ where_clause }} {% endif %}
 
-		{% if where_clause is not none %}
-			and {{ where_clause }}
-		{% endif %}
-
-            and abs({{ column_name }} - comp_value) > {% if precision_amount is not none %} {{ precision_amount }} {% else %} 0 {% endif %}
-        
-
-{% else %}
+{%- else -%}
 
 select count(*)
 
 from {{ model }}
 
-where abs({{ column_name }} - ({{ comparison_value }})) > {% if precision_amount is not none %} {{ precision_amount }} {% else %} 0 {% endif %}
-
-	{% if where_clause is not none %}
-		and {{ where_clause }}
-	{% endif %}
+where abs({{ column_name }} - ({{ comparison_value }})) >  {{ precision_amount }}
+	{% if where_clause is not none %} and {{ where_clause }} {% endif %}
         
-
-{% endif %}
-
+{%- endif -%}
 {% endmacro %}
