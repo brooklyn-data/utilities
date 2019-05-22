@@ -1,3 +1,3 @@
-{%- macro convert_tz (column_name, timezone='America/New_York', timezone_alias='EST') -%}
-	convert_timezone('{{timezone}}', {{column_name}}) as {{column_name[(column_name.find('.')+1):] + '_' + timezone_alias.lower()}}
+{%- macro convert_tz (column_name, tz='{{var("timezone")}}', tz_alias='{{var("timezone_alias")}}') -%}
+	convert_timezone('{{tz}}', {{column_name}}) as {{column_name[(column_name.find('.')+1):] + '_' + tz_alias.lower()}}
 {%- endmacro -%}
