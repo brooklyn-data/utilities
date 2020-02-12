@@ -5,7 +5,7 @@ select count(*)
 from {{ model }}
 
 where
-	{{ column_name }} isnull and
+	{{ column_name }} is null and
 	{{ where_clause }}
 
 {% endmacro %}
@@ -41,6 +41,6 @@ from {{ model }}
 
 where abs({{ column_name }} - ({{ comparison_value }})) >  {{ precision_amount }}
 	{% if where_clause is not none %} and {{ where_clause }} {% endif %}
-        
+
 {%- endif -%}
 {% endmacro %}
